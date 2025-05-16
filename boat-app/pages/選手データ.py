@@ -5,9 +5,12 @@ import requests
 from bs4 import BeautifulSoup
 import datetime
 import sqlite3
+import os
 
 def get_race_data_from_db(player_name, course_num):
-    conn = sqlite3.connect("boatrace_data.db")
+# 親ディレクトリのパスを取得して、そこからdbに接続
+    db_path = os.path.join(os.path.dirname(__file__), "..", "boatrace_data.db")
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
     query = """
