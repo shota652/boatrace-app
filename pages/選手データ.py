@@ -73,7 +73,7 @@ def show_movement_summary(data_rows,player_name):
         "second_place", "lost_to", "rank", "st_eval",
         "attack", "flow", "block", "kawarizensoku", "three_hari",
         "flow_cabi", "three_makurizashi", "two_nokoshi", "four_tsubushi",
-        "four_nokoshi", "出遅", "抜出"
+        "four_nokoshi", "出遅", "抜出", "date"
     ]
     df = pd.DataFrame(data_rows, columns=columns)
 
