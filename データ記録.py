@@ -128,10 +128,12 @@ try:
                 flow_cabi = st.checkbox("流れ・キャビ", key=f"{key_prefix}_flow_cabi_{i}")
                 three_makurizashi = st.checkbox("3捲り差し1着", key=f"{key_prefix}_3_makurizashi_{i}")
                 kawarizensoku = st.checkbox("かわり全速", key=f"{key_prefix}_kawarizensoku_{i}")
+                pressure = st.checkbox("圧", key=f"{key_prefix}_pressure_{i}")
                 additional_data["攻め"] = attack
                 additional_data["流れ・キャビ"] = flow_cabi
                 additional_data["3捲り差し1着"] = three_makurizashi
                 additional_data["かわり全速"] = kawarizensoku
+                additional_data["圧"] = pressure
 
             elif course_in == 3:
                 move = st.selectbox("動き", ["外マイ", "絞り捲り", "ツケマイ", "捲り差し", "後手捲り差し", "差し", "2捲り展開", "展開差し・捲り差し", "2外被り", "捲られ・叩かれ", "ブロック負け"], key=f"{key_prefix}_move_{i}")
@@ -143,26 +145,30 @@ try:
                 two_nokoshi = st.checkbox("2残し", key=f"{key_prefix}_2_nokoshi_{i}")
                 four_tsubushi = st.checkbox("4潰し", key=f"{key_prefix}_4_tsubushi_{i}")
                 kawarizensoku = st.checkbox("かわり全速", key=f"{key_prefix}_kawarizensoku_{i}")
+                pressure = st.checkbox("圧", key=f"{key_prefix}_pressure_{i}")
                 additional_data["攻め"] = attack
                 additional_data["流れ・キャビ"] = flow_cabi
                 additional_data["2残し"] = two_nokoshi
                 additional_data["4潰し"] = four_tsubushi
                 additional_data["かわり全速"] = kawarizensoku
+                additional_data["圧"] = pressure
 
             elif course_in == 4:
-                move = st.selectbox("動き", ["差し", "捲り差し", "外マイ", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "展開捲り差し・外マイ", "3差し被り", "5捲り差され", "捲られ・叩かれ", "ブロック負け"], key=f"{key_prefix}_move_{i}")
+                move = st.selectbox("動き", ["差し", "捲り差し", "外マイ", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "展開捲り差し・外マイ", "3差し被り", "5捲り差され", "捲られ・叩かれ", "ブロック負け", "後手"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
                 rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank
                 attack = st.checkbox("攻め", key=f"{key_prefix}_attack_{i}")
                 flow_cabi = st.checkbox("流れ・キャビ", key=f"{key_prefix}_flow_cabi_{i}")
                 kawarizensoku = st.checkbox("かわり全速", key=f"{key_prefix}_kawarizensoku_{i}")
+                pressure = st.checkbox("圧", key=f"{key_prefix}_pressure_{i}")
                 additional_data["攻め"] = attack
                 additional_data["流れ・キャビ"] = flow_cabi
                 additional_data["かわり全速"] = kawarizensoku
+                additional_data["圧"] = pressure
 
             elif course_in == 5:
-                move = st.selectbox("動き", ["1-2捲り差し", "2-4捲り差し", "外マイ", "差し", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "展開差し・捲り差し・外マイ", "4外被り", "叩かれ・捲られ", "ブロック負け"], key=f"{key_prefix}_move_{i}")
+                move = st.selectbox("動き", ["1-2捲り差し", "2-4捲り差し", "外マイ", "差し", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "展開差し・捲り差し・外マイ", "4外被り", "叩かれ・捲られ", "ブロック負け", "後手"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
                 rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank
@@ -170,18 +176,22 @@ try:
                 flow_cabi = st.checkbox("流れ・キャビ", key=f"{key_prefix}_flow_cabi_{i}")
                 four_nokoshi = st.checkbox("4残し", key=f"{key_prefix}_4_nokoshi_{i}")
                 kawarizensoku = st.checkbox("かわり全速", key=f"{key_prefix}_kawarizensoku_{i}")
+                pressure = st.checkbox("圧", key=f"{key_prefix}_pressure_{i}")
                 additional_data["攻め"] = attack
                 additional_data["流れ・キャビ"] = flow_cabi
                 additional_data["4残し"] = four_nokoshi
                 additional_data["かわり全速"] = kawarizensoku
+                additional_data["圧"] = pressure
 
             elif course_in == 6:
-                move = st.selectbox("動き", ["差し", "捲り差し・外マイ", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "展開差し・捲り差し・外マイ", "5差し被り", "ブロック負け"], key=f"{key_prefix}_move_{i}")
+                move = st.selectbox("動き", ["差し", "捲り差し・外マイ", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "展開差し・捲り差し・外マイ", "5差し被り", "ブロック負け", "後手"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
                 rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank
                 attack = st.checkbox("攻め", key=f"{key_prefix}_attack_{i}")
+                pressure = st.checkbox("圧", key=f"{key_prefix}_pressure_{i}")
                 additional_data["攻め"] = attack
+                additional_data["圧"] = pressure
 
             # ST評価
             st_eval = st.selectbox(
@@ -204,7 +214,7 @@ try:
                 cursor.execute('''
                     SELECT COUNT(*) FROM race_data
                     WHERE player_name = ? AND race_number = ? AND venue_name = ? AND date = ?
-                ''', (record["選手名"], race_number, venue_name, today))
+                ''', (record["選手名"], race_number, venue_name, date.isoformat()))
                 count = cursor.fetchone()[0]
 
                 if count == 0:
@@ -213,10 +223,10 @@ try:
                             date, venue_name, race_number, player_name, course_in, move, second_place,
                             lost_to, rank, st_eval,
                             attack, flow, block, kawarizensoku, three_hari,
-                            flow_cabi, three_makurizashi, two_nokoshi, four_tsubushi, four_nokoshi
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            flow_cabi, three_makurizashi, two_nokoshi, four_tsubushi, four_nokoshi, pressure
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ''', (
-                        today,
+                        date.isoformat(),
                         venue_name,
                         race_number,
                         record["選手名"],
@@ -237,7 +247,8 @@ try:
                         int(record.get("3捲り差し1着", 0)),
                         int(record.get("2残し", 0)),
                         int(record.get("4潰し", 0)),
-                        int(record.get("4残し", 0))
+                        int(record.get("4残し", 0)),
+                        int(record.get("圧", 0))
                     ))
                     conn.commit()
                 else:

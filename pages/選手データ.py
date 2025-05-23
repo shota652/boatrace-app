@@ -57,7 +57,8 @@ color_map = {
     "3差し被り": "lightgray",
     "4外被り": "lightgray",
     "5差し被り": "lightgray",
-    "5捲り差され": "darkgray"
+    "5捲り差され": "darkgray",
+    "後手": "darkslategray"
 }
 
 
@@ -73,7 +74,7 @@ def show_movement_summary(data_rows,player_name):
         "second_place", "lost_to", "rank", "st_eval",
         "attack", "flow", "block", "kawarizensoku", "three_hari",
         "flow_cabi", "three_makurizashi", "two_nokoshi", "four_tsubushi",
-        "four_nokoshi", "出遅", "抜出", "date"
+        "four_nokoshi", "出遅", "抜出", "date", "pressure"
     ]
     df = pd.DataFrame(data_rows, columns=columns)
 
@@ -165,11 +166,11 @@ def show_movement_summary(data_rows,player_name):
     ### ③ 補足項目（コース別に表示）
     補足項目 = {
         1: ["three_hari", "block", "flow", "kawarizensoku"],
-        2: ["attack", "flow_cabi", "three_makurizashi", "kawarizensoku"],
-        3: ["attack", "flow_cabi", "two_nokoshi", "four_tsubushi", "kawarizensoku"],
-        4: ["attack", "flow_cabi", "kawarizensoku"],
-        5: ["attack", "flow_cabi", "four_nokoshi", "kawarizensoku"],
-        6: ["attack"]
+        2: ["attack", "flow_cabi", "three_makurizashi", "kawarizensoku", "pressure"],
+        3: ["attack", "flow_cabi", "two_nokoshi", "four_tsubushi", "kawarizensoku", "pressure"],
+        4: ["attack", "flow_cabi", "kawarizensoku", "pressure"],
+        5: ["attack", "flow_cabi", "four_nokoshi", "kawarizensoku", "pressure"],
+        6: ["attack", "pressure"]
     }
 
     # 英語 → 日本語 の対応辞書
@@ -183,7 +184,8 @@ def show_movement_summary(data_rows,player_name):
         "three_makurizashi": "3捲り差し1着",
         "two_nokoshi": "2残し",
         "four_tsubushi": "4潰し",
-        "four_nokoshi": "4残し"
+        "four_nokoshi": "4残し",
+        "pressure": "圧"
     }
 
 
@@ -217,7 +219,7 @@ def show_movement_summary(data_rows,player_name):
         st.dataframe(count_df, use_container_width=True)
 
 
-st.title("コース別選手データ")
+st.markdown("<h2 style='text-align: center;'>コース別選手データ</h2>", unsafe_allow_html=True)
 
 # 会場情報
 venues = {
