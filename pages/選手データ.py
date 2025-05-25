@@ -70,11 +70,11 @@ def show_movement_summary(data_rows,player_name):
 
     # DataFrameに変換（カラム名付き）
     columns = [
-        "id", "venue_name", "race_number", "player_name", "course_in", "move", 
-        "second_place", "lost_to", "rank", "st_eval",
-        "attack", "flow", "block", "kawarizensoku", "three_hari",
-        "flow_cabi", "three_makurizashi", "two_nokoshi", "four_tsubushi",
-        "four_nokoshi", "出遅", "抜出", "date", "pressure"
+        "id", "date", "venue_name", "race_number", "course_in", "player_name", "move", 
+        "second_place", "lost_to", "rank",
+        "flow", "cabi", "kawarizensoku", "attack", "pressure",
+        "block","three_hari",
+        "three_makurizashi", "two_nokoshi", "four_tsubushi", "four_nokoshi", "st_eval"
     ]
     df = pd.DataFrame(data_rows, columns=columns)
 
@@ -165,27 +165,27 @@ def show_movement_summary(data_rows,player_name):
 
     ### ③ 補足項目（コース別に表示）
     補足項目 = {
-        1: ["three_hari", "block", "flow", "kawarizensoku"],
-        2: ["attack", "flow_cabi", "three_makurizashi", "kawarizensoku", "pressure"],
-        3: ["attack", "flow_cabi", "two_nokoshi", "four_tsubushi", "kawarizensoku", "pressure"],
-        4: ["attack", "flow_cabi", "kawarizensoku", "pressure"],
-        5: ["attack", "flow_cabi", "four_nokoshi", "kawarizensoku", "pressure"],
+        1: ["flow", "kawarizensoku", "block", "three_hari"],
+        2: ["flow", "cabi", "kawarizensoku", "attack", "pressure", "three_makurizashi"],
+        3: ["flow", "cabi", "kawarizensoku", "attack", "pressure", "two_nokoshi", "four_tsubushi"],
+        4: ["flow", "cabi", "kawarizensoku", "attack", "pressure"],
+        5: ["flow", "cabi", "kawarizensoku", "attack", "pressure", "four_nokoshi"],
         6: ["attack", "pressure"]
     }
 
     # 英語 → 日本語 の対応辞書
     japanese_labels = {
-        "attack": "攻め",
         "flow": "流れ",
-        "block": "捲りブロック",
+        "cabi": "キャビ",
         "kawarizensoku": "かわり全速",
+        "attack": "攻め",
+        "pressure": "圧",
+        "block": "捲りブロック",
         "three_hari": "3張",
-        "flow_cabi": "流れ・キャビ",
         "three_makurizashi": "3捲り差し1着",
         "two_nokoshi": "2残し",
         "four_tsubushi": "4潰し",
-        "four_nokoshi": "4残し",
-        "pressure": "圧"
+        "four_nokoshi": "4残し"
     }
 
 
