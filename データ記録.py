@@ -3,6 +3,20 @@ import requests
 from bs4 import BeautifulSoup
 import datetime
 import sqlite3
+import os
+import json
+
+# --- オフライン用の読み込み関数 ---
+def load_local_racecard(date_str, venue_name, race_number):
+    file_name = f"{date_str}_{venue_name}_{race_number:02}.json"
+    file_path = os.path.join("local_racecards", file_name)
+
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return [entry["name"] for entry in data]
+    else:
+        return None
 
 st.title("選手データ記録")
 
@@ -35,6 +49,8 @@ CREATE TABLE IF NOT EXISTS race_data (
     four_tsubushi INTEGER,
     four_nokoshi INTEGER,
     st_eval TEXT
+    two_shizumase
+    four_shizumase
 )
 ''')
 conn.commit()
@@ -63,15 +79,41 @@ venue_code = venues[venue_name]
 url = f"https://www.boatrace.jp/owpc/pc/race/racelist?rno={race_number}&jcd={venue_code}&hd={date_str}"
 
 @st.cache_data(ttl=3600)
-def get_racer_names(url):
-    res = requests.get(url)
-    soup = BeautifulSoup(res.content, "html.parser")
-    name_tags = soup.select("div.is-fs18.is-fBold a")
-    return [tag.text.strip() for tag in name_tags]
+def get_racer_names(url, date_str, venue_name, race_number):
+    # ① まずローカルに出走表があるか確認
+    local_data = load_local_racecard(date_str, venue_name, race_number)
+    if local_data:
+        return local_data
+
+    # ② なければオンラインで取得
+    try:
+        res = requests.get(url)
+        res.raise_for_status()
+        soup = BeautifulSoup(res.content, "html.parser")
+        name_tags = soup.select("div.is-fs18.is-fBold a")
+
+        if not name_tags:
+            # オンラインでも選手名が取得できない（ページ構成変化 or 未公開）
+            st.warning("出走表が見つかりませんでした（ローカルにもオンラインにもありません）")
+            return []
+
+        return [tag.text.strip() for tag in name_tags]
+
+    except requests.exceptions.RequestException as e:
+        st.warning("通信エラーが発生しました（オフラインとみなします）")
+        with st.expander("エラーの詳細を見る"):
+            st.code(str(e))
+        return []
+
+    except Exception as e:
+        st.error("解析中に予期しないエラーが発生しました。")
+        with st.expander("エラーの詳細を見る"):
+            st.code(str(e))
+        return []
+
+racer_names = get_racer_names(url, date_str, venue_name, race_number)
 
 try:
-    racer_names = get_racer_names(url)
-
     if racer_names:
         st.markdown(f"### {venue_name} {race_number}R 出走表")
         
@@ -95,7 +137,7 @@ try:
 
             # 進入コースごとの処理
             if course_in == 1:
-                move = st.selectbox("動き", ["逃げ", "差され", "捲られ", "捲り差され"], key=f"{key_prefix}_move_{i}")
+                move = st.selectbox("動き", ["逃げ", "差され", "捲られ", "捲り差され", "抜かれ"], key=f"{key_prefix}_move_{i}")
                 if move == "逃げ":
                     second_place = st.selectbox("2着の艇番", [2, 3, 4, "記録なし"], key=f"{key_prefix}_second_{i}")
                     additional_data["2着"] = second_place
@@ -136,7 +178,7 @@ try:
                 additional_data["3捲り差し1着"] = three_makurizashi
 
             elif course_in == 3:
-                move = st.selectbox("動き", ["外マイ", "絞り捲り", "ツケマイ", "捲り差し", "後手捲り差し", "差し", "2捲り展開", "展開差し・捲り差し", "2外被り", "捲られ・叩かれ", "ブロック負け"], key=f"{key_prefix}_move_{i}")
+                move = st.selectbox("動き", ["外マイ", "絞り捲り", "ツケマイ", "箱捲り", "捲り差し", "後手捲り差し", "差し", "2捲り展開", "展開差し・捲り差し", "2外被り", "捲られ・叩かれ", "ブロック負け"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
                 rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank
@@ -148,6 +190,7 @@ try:
                 pressure = st.checkbox("圧", key=f"{key_prefix}_pressure_{i}")
                 two_nokoshi = st.checkbox("2残し", key=f"{key_prefix}_2_nokoshi_{i}")
                 four_tsubushi = st.checkbox("4潰し", key=f"{key_prefix}_4_tsubushi_{i}")
+                two_shizumase = st.checkbox("2沈ませ", key=f"{key_prefix}_2_shizumase_{i}")
                 additional_data["流れ"] = flow
                 additional_data["キャビ"] = cabi
                 additional_data["かわり全速"] = kawarizensoku 
@@ -155,6 +198,7 @@ try:
                 additional_data["圧"] = pressure
                 additional_data["2残し"] = two_nokoshi
                 additional_data["4潰し"] = four_tsubushi
+                additional_data["2沈ませ"] = two_shizumase
 
             elif course_in == 4:
                 move = st.selectbox("動き", ["差し", "捲り差し", "外マイ", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "3捲り展開", "3絞り展開", "展開捲り差し・外マイ", "3差し被り", "5捲り差され", "捲られ・叩かれ", "ブロック負け", "後手"], key=f"{key_prefix}_move_{i}")
@@ -185,12 +229,15 @@ try:
                 attack = st.checkbox("攻め", key=f"{key_prefix}_attack_{i}")
                 pressure = st.checkbox("圧", key=f"{key_prefix}_pressure_{i}")
                 four_nokoshi = st.checkbox("4残し", key=f"{key_prefix}_4_nokoshi_{i}")
+                four_shizumase = st.checkbox("4沈ませ", key=f"{key_prefix}_4_shizumase_{i}")
                 additional_data["流れ"] = flow
                 additional_data["キャビ"] = cabi
                 additional_data["かわり全速"] = kawarizensoku 
                 additional_data["攻め"] = attack
                 additional_data["圧"] = pressure
                 additional_data["4残し"] = four_nokoshi
+                additional_data["4沈ませ"] = four_shizumase
+
 
             elif course_in == 6:
                 move = st.selectbox("動き", ["差し", "捲り差し・外マイ", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "5捲り展開", "5絞り展開", "展開差し・捲り差し・外マイ", "5差し被り", "ブロック負け", "後手"], key=f"{key_prefix}_move_{i}")
@@ -232,8 +279,8 @@ try:
                             date, venue_name, race_number, course_in, player_name, move, second_place,
                             lost_to, rank,
                             flow, cabi, kawarizensoku, attack, pressure, block, three_hari,
-                            three_makurizashi, two_nokoshi, four_tsubushi, four_nokoshi, st_eval
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            three_makurizashi, two_nokoshi, four_tsubushi, four_nokoshi, st_eval, two_shizumase, four_shizumase
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ''', (
                         date.isoformat(),
                         venue_name,
@@ -258,7 +305,9 @@ try:
                         int(record.get("2残し", 0)),
                         int(record.get("4潰し", 0)),
                         int(record.get("4残し", 0)),
-                        record["ST評価"]
+                        record["ST評価"],
+                        int(record.get("2沈ませ", 0)),
+                        int(record.get("4沈ませ", 0))
                     ))
                     conn.commit()
                 else:

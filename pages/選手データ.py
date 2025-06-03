@@ -5,6 +5,19 @@ import requests
 from bs4 import BeautifulSoup
 import datetime
 import os
+import json
+
+# --- オフライン用の読み込み関数 ---
+def load_local_racecard(date_str, venue_name, race_number):
+    file_name = f"{date_str}_{venue_name}_{race_number:02}.json"
+    file_path = os.path.join("local_racecards", file_name)
+
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return [entry["name"] for entry in data]
+    else:
+        return None
 
 def get_race_data_from_csv(player_name, course_num):
     # CSVファイルのパスを指定（SQLiteのdb_pathと同じディレクトリ構成を想定）
@@ -34,6 +47,7 @@ color_map = {
     "外マイ": "indianred",
     "ジカマ": "firebrick",
     "ツケマイ": "tomato",
+    "箱捲り": "tomato",
     "絞り捲り": "lightcoral",
     "叩いて外マイ": "crimson",
 
@@ -80,7 +94,7 @@ def show_movement_summary(data_rows,player_name):
         "second_place", "lost_to", "rank",
         "flow", "cabi", "kawarizensoku", "attack", "pressure",
         "block","three_hari",
-        "three_makurizashi", "two_nokoshi", "four_tsubushi", "four_nokoshi", "st_eval"
+        "three_makurizashi", "two_nokoshi", "four_tsubushi", "four_nokoshi", "st_eval", "two_shizumase", "four_shizumase"
     ]
     df = pd.DataFrame(data_rows, columns=columns)
 
@@ -173,9 +187,9 @@ def show_movement_summary(data_rows,player_name):
     補足項目 = {
         1: ["flow", "kawarizensoku", "block", "three_hari"],
         2: ["flow", "cabi", "kawarizensoku", "attack", "pressure", "three_makurizashi"],
-        3: ["flow", "cabi", "kawarizensoku", "attack", "pressure", "two_nokoshi", "four_tsubushi"],
+        3: ["flow", "cabi", "kawarizensoku", "attack", "pressure", "two_nokoshi", "four_tsubushi", "two_shizumase"],
         4: ["flow", "cabi", "kawarizensoku", "attack", "pressure"],
-        5: ["flow", "cabi", "kawarizensoku", "attack", "pressure", "four_nokoshi"],
+        5: ["flow", "cabi", "kawarizensoku", "attack", "pressure", "four_nokoshi", "four_shizumase"],
         6: ["attack", "pressure"]
     }
 
@@ -191,7 +205,9 @@ def show_movement_summary(data_rows,player_name):
         "three_makurizashi": "3捲り差し1着",
         "two_nokoshi": "2残し",
         "four_tsubushi": "4潰し",
-        "four_nokoshi": "4残し"
+        "four_nokoshi": "4残し",
+        "two_shizumase": "2沈ませ",
+        "four_shizumase": "4沈ませ"
     }
 
 
@@ -201,9 +217,9 @@ def show_movement_summary(data_rows,player_name):
         st.markdown("#### 補足項目")
         rows = []
         for item in selected_items:
-            if item in df_move.columns:
-                count = df_move[item].sum()
-                total = len(df_move)
+            if item in df.columns:
+                count = df[item].sum()
+                total = len(df)
                 rows.append({"項目": japanese_labels.get(item, item), "回数": count, "割合": f"{round(count / total * 100, 1)}%"})
 
         if rows:
@@ -212,10 +228,10 @@ def show_movement_summary(data_rows,player_name):
 
 
     ### ④ ST評価（出遅・抜出）
-    if "st_eval" in df_move.columns:
+    if "st_eval" in df.columns:
         st.markdown("#### ST評価")
 
-        count_df = df_move["st_eval"].value_counts(dropna=False).reset_index()
+        count_df = df["st_eval"].value_counts(dropna=False).reset_index()
         count_df.columns = ["評価", "回数"]
         total = count_df["回数"].sum()
         count_df["割合"] = count_df["回数"].apply(
@@ -251,26 +267,39 @@ venue_code = venues[venue_name]
 url = f"https://www.boatrace.jp/owpc/pc/race/racelist?rno={race_number}&jcd={venue_code}&hd={date_str}"
 
 @st.cache_data(ttl=3600)
-def get_racer_names(url):
+def get_racer_names(url, date_str, venue_name, race_number):
+    # ① まずローカルに出走表があるか確認
+    local_data = load_local_racecard(date_str, venue_name, race_number)
+    if local_data:
+        return local_data
+
+    # ② なければオンラインで取得
     try:
         res = requests.get(url)
+        res.raise_for_status()
         soup = BeautifulSoup(res.content, "html.parser")
         name_tags = soup.select("div.is-fs18.is-fBold a")
+
         if not name_tags:
-            st.warning("出走表が見つかりませんでした。日付・場・レースを確認してください。")
+            # オンラインでも選手名が取得できない（ページ構成変化 or 未公開）
+            st.warning("出走表が見つかりませんでした（ローカルにもオンラインにもありません）")
             return []
 
         return [tag.text.strip() for tag in name_tags]
 
     except requests.exceptions.RequestException as e:
-        st.error(f"通信エラーが発生しました: {e}")
+        st.warning("通信エラーが発生しました（オフラインとみなします）")
+        with st.expander("エラーの詳細を見る"):
+            st.code(str(e))
         return []
 
     except Exception as e:
-        st.error(f"解析中にエラーが発生しました: {e}")
+        st.error("解析中に予期しないエラーが発生しました。")
+        with st.expander("エラーの詳細を見る"):
+            st.code(str(e))
         return []
 
-racer_names = get_racer_names(url)
+racer_names = get_racer_names(url, date_str, venue_name, race_number)
 
 try:
     if racer_names:
