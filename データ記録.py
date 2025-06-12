@@ -48,9 +48,9 @@ CREATE TABLE IF NOT EXISTS race_data (
     two_nokoshi INTEGER,
     four_tsubushi INTEGER,
     four_nokoshi INTEGER,
-    st_eval TEXT
-    two_shizumase
-    four_shizumase
+    st_eval TEXT,
+    two_shizumase INTEGER,
+    four_shizumase INTEGER
 )
 ''')
 conn.commit()
@@ -158,7 +158,7 @@ try:
                 additional_data["3張"] = three_hari
 
             elif course_in == 2:
-                move = st.selectbox("動き", ["差し", "外マイ", "ジカマ", "ツケマイ", "3捲り差され", "捲られ・叩かれ", "ブロック負け"], key=f"{key_prefix}_move_{i}")
+                move = st.selectbox("動き", ["差し", "外マイ", "ジカマ", "ツケマイ", "3捲り差され", "捲られ・叩かれ", "ブロック負け", "3ツケマイ展開"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
                 rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank

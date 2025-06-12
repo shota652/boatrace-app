@@ -62,6 +62,7 @@ color_map = {
     "3捲り展開": "rebeccapurple",
     "4捲り展開": "rebeccapurple",
     "5捲り展開": "rebeccapurple",
+    "3ツケマイ展開": "rebeccapurple",
     "3絞り展開": "slateblue",
     "4絞り展開": "slateblue",
     "5絞り展開": "slateblue",
@@ -78,7 +79,14 @@ color_map = {
     "4外被り": "lightgray",
     "5差し被り": "lightgray",
     "5捲り差され": "darkgray",
-    "後手": "darkslategray"
+    "後手": "darkslategray",
+
+    "2": "black",
+    "3": "red",
+    "4": "blue",
+    "5": "yellow",
+    "6": "green",
+    "記録なし": "gray"
 }
 
 
@@ -98,90 +106,79 @@ def show_movement_summary(data_rows,player_name):
     ]
     df = pd.DataFrame(data_rows, columns=columns)
 
-    # 動き別にカウント・割合
-    movement_counts = df["move"].value_counts().reset_index()
-    movement_counts.columns = ["動き", "回数"]
-    movement_counts["割合"] = movement_counts["回数"].apply(
-        lambda x: f"{round(x / movement_counts['回数'].sum() * 100, 1)}%"
-    )
 
+    # rankの前後スペースを除去しておく（表記ブレ対策）
+    df["rank"] = df["rank"].astype(str).str.strip()
+
+    # 1着の判定：rankが"1" または course_in==1 かつ move=="逃げ"
+    df["is_win"] = ((df["rank"] == "1") | ((df["course_in"] == 1) & (df["move"] == "逃げ")))
+
+    # 着順ごとの判定（1コース逃げ以外は rank に値がある）
+    df["is_2nd"] = (df["rank"] == "2")
+    df["is_3rd"] = (df["rank"] == "3")
+    df["is_out"] = (df["rank"] == "着外")
+
+    # 動きごとに集計
+    movement_summary = df.groupby("move").agg(
+        count=('move', 'count'),
+        win=('is_win', 'sum'),
+        place2=('is_2nd', 'sum'),
+        place3=('is_3rd', 'sum'),
+        out=('is_out', 'sum')
+    ).reset_index()
+
+    # 割合列追加
+    movement_summary["割合"] = (movement_summary["count"] / movement_summary["count"].sum() * 100).round(1).astype(str) + "%"
+
+    # 並び替えと列名変更
+    movement_summary = movement_summary[["move", "count", "割合", "win", "place2", "place3", "out"]]
+    movement_summary = movement_summary.sort_values("割合", ascending=False)
+    movement_summary = movement_summary.rename(columns={
+        "move": "動き", "count": "回数",
+        "win": "1着", "place2": "2着", "place3": "3着", "out": "着外"
+    })
+
+    # 表表示
     st.markdown("---")
     st.markdown("#### 動きの傾向")
-    st.dataframe(movement_counts)
+    st.dataframe(movement_summary, use_container_width=True, hide_index=True)
+
 
     # 円グラフ表示
-    fig = px.pie(movement_counts, names="動き", values="回数", title="動きの割合", hole=0.4, color="動き", color_discrete_map=color_map)
+    fig = px.pie(movement_summary, names="動き", values="回数", title="動きの割合", hole=0.4, color="動き", color_discrete_map=color_map)
     st.plotly_chart(fig,key=f"move_summary_{player_name}")
 
- # 動きの詳細選択
-    selected_move = st.selectbox("表示する動きを選んでください", movement_counts["動き"],key=f"select_move_{player_name}")
+    df_move = df[df["move"].notnull()]  # 念のためnull除外（任意）
 
-    df_move = df[df["move"] == selected_move]
     if df_move.empty:
-        st.write("選択された動きのデータがありません。")
+        st.write("データがありません。")
         return
 
     # 現在の進入コース（すべて同じはず）
     course_num = df_move["course_in"].iloc[0]
 
-    # 1コースの場合の詳細
+    # 1コースの場合のみ動きのセレクトボックスと詳細表示
     if course_num == 1:
+        selected_move = st.selectbox("表示する動きを選んでください", movement_summary["動き"], key=f"select_move_{player_name}")
+        df_move = df_move[df_move["move"] == selected_move]
+
+        if df_move.empty:
+            st.write("選択された動きのデータがありません。")
+            return
+
         if selected_move == "逃げ":
-            # 逃げ時の2着のコース
             if "second_place" in df_move.columns:
                 second_course_counts = df_move["second_place"].value_counts().reset_index()
                 second_course_counts.columns = ["2着コース", "回数"]
-                fig = px.pie(second_course_counts, names="2着コース", values="回数", title="2着の相手コース", hole=0.3)
+                fig = px.pie(second_course_counts, names="2着コース", values="回数", title="2着の相手コース", hole=0.3, color="2着コース", color_discrete_map=color_map)
                 st.plotly_chart(fig, use_container_width=True, key=f"pie_nige_2nd_{player_name}_{selected_move}_{course_num}")
 
         elif selected_move in ["差され", "捲られ", "捲り差され"]:
-            # (1.2) 1コースで差され・捲られ・捲り差され
             if "lost_to" in df_move.columns:
                 rival_counts = df_move["lost_to"].value_counts().reset_index()
                 rival_counts.columns = ["負けたコース", "回数"]
-                fig1 = px.pie(rival_counts, names="負けたコース", values="回数", title="負けたコース", hole=0.3)
+                fig1 = px.pie(rival_counts, names="負けたコース", values="回数", title="負けたコース", hole=0.3, color="負けたコース",color_discrete_map=color_map)
                 st.plotly_chart(fig1, use_container_width=True, key=f"pie_lose_course_{player_name}_{selected_move}_{course_num}")
-
-            if "rank" in df_move.columns:
-                order = ["1", "2", "3", "着外"]
-                df_move["rank"] = df_move["rank"].astype(str)
-
-                pos_counts = df_move["rank"].value_counts(normalize=False).reset_index()
-                pos_counts.columns = ["着順", "回数"]
-                fig2 = px.bar(pos_counts, x="回数", y="着順", orientation="h", category_orders={"着順": order}, title="着順割合")
-
-
-                fig2.update_layout(
-                    yaxis=dict(type='category'),
-                    xaxis=dict(tickformat="d")
-                )
-                st.plotly_chart(fig2, use_container_width=True, key=f"pie_lose_rank_{player_name}_{selected_move}_{course_num}")
-
-    else:
-    # (2) 2〜6コース → 着順（表＋横棒グラフ）
-        if "rank" in df_move.columns:
-            order = ["1", "2", "3", "着外"]
-            df_move["rank"] = df_move["rank"].astype(str)
-
-            pos_df = df_move["rank"].value_counts(normalize=False).reset_index()
-            pos_df.columns = ["着順", "回数"]
-            pos_df["割合"] = pos_df["回数"].apply(
-                lambda x: f"{round(x / pos_df['回数'].sum() * 100)}%"
-            )
-
-
-            st.dataframe(pos_df, use_container_width=True)
-
-            fig = px.bar(pos_df, x="回数", y="着順", orientation="h", category_orders={"着順": order}, title="着順割合",
-                         text="割合", labels={"割合": "%"})
-
-            fig.update_layout(
-                yaxis=dict(type='category'),
-                xaxis=dict(tickformat="d")
-            )
-
-            st.plotly_chart(fig, use_container_width=True, key=f"bar_rank_{player_name}_{selected_move}_{course_num}")
-
 
     ### ③ 補足項目（コース別に表示）
     補足項目 = {
