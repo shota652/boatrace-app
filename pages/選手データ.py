@@ -127,36 +127,31 @@ def show_movement_summary(data_rows,player_name):
         out=('is_out', 'sum')
     ).reset_index()
 
-    # 割合列追加（数値型で一旦保持）
-    movement_summary["割合"] = (movement_summary["count"] / movement_summary["count"].sum() * 100).round(1)
+    # 回数順に並べ替え
+    movement_summary = movement_summary.sort_values("count", ascending=False)
 
-    # グラフ用に別DataFrameを保持（回数と動きだけ使う）
-    graph_df = movement_summary[["move", "count"]].copy()
-
-    # 割合順に並べ替え（この時点では列は残っている）
-    movement_summary = movement_summary.sort_values("割合", ascending=False)
-
-    # 「回数 / 割合」列を作成
-    movement_summary["回数 / 割合"] = (
-        movement_summary["count"].astype(str) + "回 / " +
-        movement_summary["割合"].astype(str) + "%"
-    )
-
-    # 並び替えと列名変更
-    movement_summary = movement_summary[["move", "回数 / 割合", "win", "place2", "place3", "out"]]
+    # 表表示（割合なし）
+    movement_summary = movement_summary[["move", "count", "win", "place2", "place3", "out"]]
     movement_summary = movement_summary.rename(columns={
-        "move": "動き", "win": "1着", "place2": "2着", "place3": "3着", "out": "着外"
+        "move": "動き", "count": "回数", "win": "1着", "place2": "2着", "place3": "3着", "out": "着外"
     })
 
-    # 表表示
     st.markdown("---")
     st.markdown("#### 動きの傾向")
     st.dataframe(movement_summary, use_container_width=True, hide_index=True)
 
-
-    # 円グラフ表示
-    fig = px.pie(graph_df, names="move", values="count", title="動きの割合", hole=0.4, color="move", color_discrete_map=color_map)
-    st.plotly_chart(fig,key=f"move_summary_{player_name}")
+    # 円グラフ（割合表示あり）
+    fig = px.pie(
+        movement_summary,
+        names="動き",
+        values="回数",
+        title="動きの割合",
+        hole=0.4,
+        color="動き",
+        color_discrete_map=color_map
+    )
+    fig.update_traces(textinfo='percent+label')  # ← 割合とラベルを表示
+    st.plotly_chart(fig, key=f"move_summary_{player_name}")
 
     df_move = df[df["move"].notnull()]  # 念のためnull除外（任意）
 
