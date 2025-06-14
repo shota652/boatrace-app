@@ -226,7 +226,7 @@ def show_movement_summary(data_rows,player_name):
 
         if rows:
             df_supplement = pd.DataFrame(rows)
-            st.dataframe(df_supplement, use_container_width=True)
+            st.dataframe(df_supplement, use_container_width=True, hide_index=True)
 
 
     ### ④ ST評価（出遅・抜出）
@@ -240,7 +240,7 @@ def show_movement_summary(data_rows,player_name):
             lambda x: f"{round(x / total * 100)}%"
         )
 
-        st.dataframe(count_df, use_container_width=True)
+        st.dataframe(count_df, use_container_width=True, hide_index=True)
 
 
 st.markdown("<h2 style='text-align: center;'>コース別選手データ</h2>", unsafe_allow_html=True)
