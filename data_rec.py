@@ -9,6 +9,11 @@ import sqlite3
 import os
 import json
 
+# レース番号の初期化（セッションに保持）
+if "race_number" not in st.session_state:
+    st.session_state["race_number"] = 1
+race_number = st.session_state["race_number"]
+
 # --- オフライン用の読み込み関数 ---
 def load_local_racecard(date_str, venue_name, race_number):
     file_name = f"{date_str}_{venue_name}_{race_number:02}.json"
@@ -76,7 +81,7 @@ col1, col2 = st.columns(2)
 with col1:
     venue_name = st.selectbox("場を選択", list(venues.keys()))
 with col2:
-    race_number = st.selectbox("レースを選択", list(range(1, 13)))
+    race_number = st.selectbox("レースを選択", list(range(1, 13)), index=st.session_state["race_number"] - 1)
 
 venue_code = venues[venue_name]
 url = f"https://www.boatrace.jp/owpc/pc/race/racelist?rno={race_number}&jcd={venue_code}&hd={date_str}"
@@ -118,7 +123,19 @@ racer_names = get_racer_names(url, date_str, venue_name, race_number)
 
 try:
     if racer_names:
-        st.markdown(f"### {venue_name} {race_number}R 出走表")
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown(f"### {venue_name} {race_number}R 出走表")
+
+        with col2:  
+            st.write("")
+        # 「次のレースへ」ボタン（12R未満のときだけ表示）
+            if race_number < 12:
+                if st.button("次のレースへ"):
+                    st.session_state["race_number"] = race_number + 1
+                    st.rerun()
+            else:
+                st.info("これが最終レース（12R）です。")
         
         record_data = []
 
@@ -266,6 +283,8 @@ try:
                 **additional_data,
                 "ST評価": st_eval,
             })
+
+
 
         # Submit button to save the data into SQLite
         if st.button("保存"):
