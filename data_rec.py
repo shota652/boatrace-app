@@ -58,7 +58,8 @@ CREATE TABLE IF NOT EXISTS race_data (
     four_nokoshi INTEGER,
     st_eval TEXT,
     two_shizumase INTEGER,
-    four_shizumase INTEGER
+    four_shizumase INTEGER,
+    makurizashi_flow_cabi
 )
 ''')
 conn.commit()
@@ -211,6 +212,7 @@ try:
                 two_nokoshi = st.checkbox("2残し", key=f"{key_prefix}_2_nokoshi_{i}")
                 four_tsubushi = st.checkbox("4潰し", key=f"{key_prefix}_4_tsubushi_{i}")
                 two_shizumase = st.checkbox("2沈ませ", key=f"{key_prefix}_2_shizumase_{i}")
+                makurizashi_flow_cabi = st.checkbox("捲り差し流れ・キャビ", key=f"{key_prefix}_makurizashi_flow_cabi_{i}")
                 additional_data["流れ"] = flow
                 additional_data["キャビ"] = cabi
                 additional_data["かわり全速"] = kawarizensoku 
@@ -219,9 +221,10 @@ try:
                 additional_data["2残し"] = two_nokoshi
                 additional_data["4潰し"] = four_tsubushi
                 additional_data["2沈ませ"] = two_shizumase
+                additional_data["捲り差し流れ・キャビ"] = makurizashi_flow_cabi
 
             elif course_in == 4:
-                move = st.selectbox("動き", ["差し", "捲り差し", "外マイ", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "3捲り展開", "3絞り展開", "展開捲り差し・外マイ", "3差し被り", "5捲り差され", "捲られ・叩かれ", "ブロック負け", "後手"], key=f"{key_prefix}_move_{i}")
+                move = st.selectbox("動き", ["差し", "捲り差し", "外マイ", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "3捲り展開", "3絞り展開", "3ツケマイ展開", "展開捲り差し・外マイ", "3差し被り", "5捲り差され", "捲られ・叩かれ", "ブロック負け", "後手"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
                 rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank
@@ -238,7 +241,7 @@ try:
                 additional_data["圧"] = pressure              
 
             elif course_in == 5:
-                move = st.selectbox("動き", ["1-2捲り差し", "2-4捲り差し", "外マイ", "差し", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "4捲り展開", "4絞り展開", "展開差し・捲り差し・外マイ", "4外被り", "捲られ・叩かれ", "ブロック負け", "後手"], key=f"{key_prefix}_move_{i}")
+                move = st.selectbox("動き", ["1-2捲り差し", "2-4捲り差し", "外マイ", "差し", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "4捲り展開", "4絞り展開", "3ツケマイ展開", "展開差し・捲り差し・外マイ", "4外被り", "捲られ・叩かれ", "ブロック負け", "後手"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
                 rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank
@@ -301,8 +304,8 @@ try:
                             date, venue_name, race_number, course_in, player_name, move, second_place,
                             lost_to, rank,
                             flow, cabi, kawarizensoku, attack, pressure, block, three_hari,
-                            three_makurizashi, two_nokoshi, four_tsubushi, four_nokoshi, st_eval, two_shizumase, four_shizumase
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            three_makurizashi, two_nokoshi, four_tsubushi, four_nokoshi, st_eval, two_shizumase, four_shizumase, makurizashi_flow_cabi
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ''', (
                         date.isoformat(),
                         venue_name,
@@ -329,7 +332,8 @@ try:
                         int(record.get("4残し", 0)),
                         record["ST評価"],
                         int(record.get("2沈ませ", 0)),
-                        int(record.get("4沈ませ", 0))
+                        int(record.get("4沈ませ", 0)),
+                        int(record.get("捲り差し流れ・キャビ", 0))
                     ))
                     conn.commit()
                 else:

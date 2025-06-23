@@ -102,7 +102,7 @@ def show_movement_summary(data_rows,player_name):
         "second_place", "lost_to", "rank",
         "flow", "cabi", "kawarizensoku", "attack", "pressure",
         "block","three_hari",
-        "three_makurizashi", "two_nokoshi", "four_tsubushi", "four_nokoshi", "st_eval", "two_shizumase", "four_shizumase"
+        "three_makurizashi", "two_nokoshi", "four_tsubushi", "four_nokoshi", "st_eval", "two_shizumase", "four_shizumase", "makurizashi_flow_cabi"
     ]
     df = pd.DataFrame(data_rows, columns=columns)
 
@@ -189,7 +189,7 @@ def show_movement_summary(data_rows,player_name):
     補足項目 = {
         1: ["flow", "kawarizensoku", "block", "three_hari"],
         2: ["flow", "cabi", "kawarizensoku", "attack", "pressure", "three_makurizashi"],
-        3: ["flow", "cabi", "kawarizensoku", "attack", "pressure", "two_nokoshi", "four_tsubushi", "two_shizumase"],
+        3: ["flow", "cabi", "kawarizensoku", "attack", "pressure", "two_nokoshi", "four_tsubushi", "two_shizumase", "makurizashi_flow_cabi"],
         4: ["flow", "cabi", "kawarizensoku", "attack", "pressure"],
         5: ["flow", "cabi", "kawarizensoku", "attack", "pressure", "four_nokoshi", "four_shizumase"],
         6: ["attack", "pressure"]
@@ -209,7 +209,8 @@ def show_movement_summary(data_rows,player_name):
         "four_tsubushi": "4潰し",
         "four_nokoshi": "4残し",
         "two_shizumase": "2沈ませ",
-        "four_shizumase": "4沈ませ"
+        "four_shizumase": "4沈ませ",
+        "makurizashi_flow_cabi": "捲り差し流れ・キャビ"
     }
 
 
