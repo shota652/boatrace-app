@@ -44,6 +44,7 @@ color_map = {
 
     # ②〜⑥共通（色分類に基づいて設定）
     "差し": "green",
+    "2外見て差し":"green",
     "外マイ": "indianred",
     "ジカマ": "firebrick",
     "ツケマイ": "tomato",
@@ -53,6 +54,7 @@ color_map = {
 
     "捲り差し": "khaki",
     "後手捲り差し": "goldenrod",
+    "2凹捲り差し": "gold",
     "叩いて捲り差し": "khaki",
     "1-2捲り差し": "gold",
     "2-4捲り差し": "goldenrod",

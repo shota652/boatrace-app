@@ -199,7 +199,7 @@ try:
                 additional_data["3捲り差し1着"] = three_makurizashi
 
             elif course_in == 3:
-                move = st.selectbox("動き", ["外マイ", "絞り捲り", "ツケマイ", "箱捲り", "捲り差し", "後手捲り差し", "差し", "2捲り展開", "展開差し・捲り差し", "2外被り", "捲られ・叩かれ", "ブロック負け"], key=f"{key_prefix}_move_{i}")
+                move = st.selectbox("動き", ["外マイ", "絞り捲り", "ツケマイ", "箱捲り", "捲り差し", "後手捲り差し", "2凹捲り差し", "差し", "2外見て差し", "2捲り展開", "展開差し・捲り差し", "2外被り", "捲られ・叩かれ", "ブロック負け"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
                 rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank
