@@ -45,6 +45,7 @@ color_map = {
     # ②〜⑥共通（色分類に基づいて設定）
     "差し": "green",
     "2外見て差し":"green",
+    "4外見て差し":"green",
     "外マイ": "indianred",
     "ジカマ": "firebrick",
     "ツケマイ": "tomato",
