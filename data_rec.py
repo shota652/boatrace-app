@@ -9,6 +9,110 @@ import sqlite3
 import os
 import json
 
+move_options = [
+    "ジカマ", "捲り", "差し", "抜き", "まくり差し", "ツケマイ",
+    "捲られ", "捲られ・叩かれ", "2捲り展開", "3捲り展開", "3ツケマイ展開",
+    "4捲り展開", "5捲り展開", "6捲り展開", "他艇捲り展開"
+]
+
+# --- 展開ショートカット定義 ---
+nige_shortcuts = {
+    "1-2-3": {
+        1: {"rank": "1", "second_place": 2},
+        2: {"rank": "2"},
+        3: {"rank": "3"},
+    },
+    "1-2-4": {
+        1: {"rank": "1", "second_place": 2},
+        2: {"rank": "2"},
+        4: {"rank": "3"},
+    },
+    "1-3-2": {
+        1: {"rank": "1", "second_place": 3},
+        3: {"rank": "2"},
+        2: {"rank": "3"},
+    },
+    "1-3-4": {
+        1: {"rank": "1", "second_place": 3},
+        3: {"rank": "2"},
+        4: {"rank": "3"},
+    },
+    "1-4-2": {
+        1: {"rank": "1", "second_place": 4},
+        4: {"rank": "2"},
+        2: {"rank": "3"},
+    },
+    "1-4-3": {
+        1: {"rank": "1", "second_place": 4},
+        4: {"rank": "2"},
+        3: {"rank": "3"},
+    },
+}
+
+makuri_shortcuts = {
+    "②ジカマ": {
+        1: {"move": "捲られ", "lost_to": "2", "rank":"着外"},
+        2: {"move": "ジカマ", "rank":"1"},
+        3: {"move": "2捲り展開", "rank":"2"},
+        4: {"move": "2捲り展開", "rank":"3"},
+        5: {"move": "他艇捲り展開", "rank":"着外"},
+        6: {"move": "他艇捲り展開", "rank":"着外"},
+    },
+    "③絞り捲り": {
+        1: {"move": "捲られ", "lost_to": "3", "rank":"着外"},
+        2: {"move": "捲られ・叩かれ", "rank":"着外"},
+        3: {"move": "絞り捲り", "rank":"1"},
+        4: {"move": "3捲り展開", "rank":"2"},
+        5: {"move": "他艇捲り展開", "rank":"3"},
+        6: {"move": "他艇捲り展開", "rank":"着外"},
+    },
+    "③ツケマイ": {
+        1: {"move": "捲られ", "lost_to": "3", "rank":"着外"},
+        2: {"move": "3ツケマイ展開", "rank":"着外"},
+        3: {"move": "ツケマイ", "rank":"1"},
+        4: {"move": "3ツケマイ展開", "rank":"2"},
+        5: {"move": "3ツケマイ展開", "rank":"3"},
+        6: {"move": "他艇捲り展開", "rank":"着外"},
+    },
+    "④捲り": {
+        1: {"move": "捲られ", "lost_to": "4", "rank":"着外"},
+        2: {"move": "捲られ・叩かれ", "rank":"着外"},
+        3: {"move": "捲られ・叩かれ", "rank":"着外"},
+        4: {"move": "捲り", "rank":"1"},
+        5: {"move": "4捲り展開", "rank":"2"},
+        6: {"move": "4捲り展開", "rank":"3"},
+    },
+    "⑤捲り": {
+        1: {"move": "捲られ", "lost_to": "5", "rank":"着外"},
+        2: {"move": "捲られ・叩かれ", "rank":"着外"},
+        3: {"move": "捲られ・叩かれ", "rank":"着外"},
+        4: {"move": "捲られ・叩かれ", "rank":"着外"},
+        5: {"move": "捲り", "rank":"1"},
+        6: {"move": "5捲り展開", "rank":"2"},
+    },
+    "⑥捲り": {
+        1: {"move": "捲られ", "lost_to": "6", "rank":"着外"},
+        2: {"move": "捲られ・叩かれ", "rank":"着外"},
+        3: {"move": "捲られ・叩かれ", "rank":"着外"},
+        4: {"move": "捲られ・叩かれ", "rank":"着外"},
+        5: {"move": "捲られ・叩かれ", "rank":"着外"},
+        6: {"move": "捲り", "rank":"1"},
+    },
+}
+
+sashi_shortcuts = {
+    "②差し展開": {
+        1: {"move": "差され", "lost_to": 2, "rank": "2"},
+        2: {"move": "差し", "rank": "1"},
+    },
+    "③捲り差し展開": {
+        1: {"move": "捲り差され", "lost_to": 3, "rank": "2"},
+        3: {"move": "捲り差し", "rank": "1"},
+    },
+}
+
+
+
 # レース番号の初期化（セッションに保持）
 if "race_number" not in st.session_state:
     st.session_state["race_number"] = 1
@@ -73,6 +177,7 @@ venues = {
     "芦屋": "21", "福岡": "22", "唐津": "23", "大村": "24"
 }
 
+
 # 日付と場・レース選択
 today = datetime.date.today().isoformat()
 date = st.date_input("日付を選択", today)
@@ -86,6 +191,7 @@ with col2:
 
 venue_code = venues[venue_name]
 url = f"https://www.boatrace.jp/owpc/pc/race/racelist?rno={race_number}&jcd={venue_code}&hd={date_str}"
+
 
 @st.cache_data(ttl=3600)
 def get_racer_names(url, date_str, venue_name, race_number):
@@ -120,6 +226,47 @@ def get_racer_names(url, date_str, venue_name, race_number):
             st.code(str(e))
         return []
 
+# 👇 先に関数としてリセット処理を定義しておく
+def reset_shortcut_and_course_states(date_str, race_number, venue_name, url):
+    # --- ショートカットセレクトのリセット ---
+    st.session_state["nige_choice"] = "---"
+    st.session_state["makuri_choice"] = "---"
+    st.session_state["sashi_choice"] = "---"
+    st.session_state["last_nige_choice"] = "---"
+    st.session_state["last_makuri_choice"] = "---"
+    st.session_state["last_sashi_choice"] = "---"
+
+    # --- コース進入セレクトボックスのリセット（UI） ---
+    for i in range(6):
+        st.session_state.pop(f"course_pos_{i}", None)
+
+    # --- 選手ごとのステート初期化 ---
+    racer_names = get_racer_names(url, date_str, venue_name, race_number)
+    for i, name in enumerate(racer_names, start=1):
+        key_prefix = f"{date_str}_{race_number}_{name}"
+        keys_to_clear = [
+            f"{key_prefix}_course_in",
+            f"{key_prefix}_move_{i}",
+            f"{key_prefix}_rank_{i}",
+            f"{key_prefix}_lost_{i}",
+            f"{key_prefix}_second_{i}",
+        ]
+        for key in keys_to_clear:
+            st.session_state.pop(key, None)
+
+# 👇 必要なセッションステートを初期化
+if "prev_race_number" not in st.session_state:
+    st.session_state.prev_race_number = race_number
+if "prev_date_str" not in st.session_state:
+    st.session_state.prev_date_str = date_str
+
+# 👇 レース or 日付が変わったらリセット
+if st.session_state.prev_race_number != race_number or st.session_state.prev_date_str != date_str:
+    reset_shortcut_and_course_states(date_str, race_number, venue_name, url)
+    st.session_state.prev_race_number = race_number
+    st.session_state.prev_date_str = date_str
+
+
 racer_names = get_racer_names(url, date_str, venue_name, race_number)
 
 try:
@@ -137,22 +284,169 @@ try:
                     st.rerun()
             else:
                 st.info("これが最終レース（12R）です。")
+
+
+        st.markdown("### 進入コース")
+
+        course_order = []  # 選手番号（1〜6）がどのコースに入ったか（例: [2, 3, 1, 4, 5, 6]）
+        course_cols = st.columns(6)
+
+        for i in range(6):
+            with course_cols[i]:
+                course = st.selectbox(
+                    f"{i+1}コース",            # ラベル：1コース〜6コース
+                    [1, 2, 3, 4, 5, 6],        # 選手番号（1〜6号艇）
+                    index=i,
+                    key=f"course_pos_{i}"    # キー名は自由（意味の通るものに）
+                )
+                course_order.append(course)
+
+        # 毎回セッションに保持
+        st.session_state["course_order"] = course_order
+
+        # --- 選手ごとの進入コース（course_in）をセッションステートに反映 ---
+        for i, name in enumerate(racer_names, start=1):  # i: 1〜6号艇
+            key_prefix = f"{date}_{race_number}_{name}"
+            course_key = f"{key_prefix}_course_in"
+
+            if i in course_order:
+                course_in = course_order.index(i) + 1  # 進入コースは1〜6（リストindexなので+1）
+                st.session_state[course_key] = course_in
+            else:
+                st.session_state[course_key] = 0  # 不正な場合は0（空白）で初期化
+
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.markdown("### 逃げ展開")
+            nige_choice = st.selectbox("選択", ["---"] + list(nige_shortcuts.keys()) , key="nige_choice")
+
+        with col2:
+            st.markdown("### 捲り展開")
+            makuri_choice = st.selectbox(
+                "選択",
+                ["---"] + list(makuri_shortcuts.keys()),  # ここでshortcutsのキーを動的取得
+                key="makuri_choice"
+            )
+
+        with col3:
+            st.markdown("### 差し展開")
+            sashi_choice = st.selectbox("選択", ["---"] + list(sashi_shortcuts.keys()) , key="sashi_choice")
+
+
+        # --- 選択が変わったら動きと負けた艇を更新 ---
+        if nige_choice != "---" and nige_choice != st.session_state.get("last_nige_choice", "---"):
+            for i, name in enumerate(racer_names, start=1):
+                key_prefix = f"{date}_{race_number}_{name}"
+
+                course_key = f"{key_prefix}_course_in"
+                course_in = int(st.session_state.get(course_key, 0))
+
+                if course_in:
+                    shortcut_data = nige_shortcuts[nige_choice].get(course_in, {})
         
+                    # 動き：1コースだけ指定（他はデフォルトのまま）
+                    if course_in == 1:
+                        key_move = f"{key_prefix}_move_{i}"
+                        st.session_state[key_move] = "逃げ"
+
+                        # 2着の艇番を設定
+                        second = shortcut_data.get("second_place")
+                        if second:
+                            key_second = f"{key_prefix}_second_{i}"
+                            st.session_state[key_second] = second
+
+                    # 着順（rank）を設定
+                    key_rank = f"{key_prefix}_rank_{i}"
+                    rank = shortcut_data.get("rank", "")
+                    if rank:
+                        st.session_state[key_rank] = rank
+
+            st.session_state["last_nige_choice"] = nige_choice
+            st.rerun()
+
+        elif makuri_choice != "---" and makuri_choice != st.session_state.get("last_makuri_choice", "---"):
+            for i, name in enumerate(racer_names, start=1):
+                key_prefix = f"{date}_{race_number}_{name}"
+
+                # 選手の進入コースを取得
+                course_key = f"{key_prefix}_course_in"
+                course_in = int(st.session_state.get(course_key, 0))
+
+                if course_in:
+                    # 展開ショートカット定義から、該当コースの設定を取得
+                    shortcut_data = makuri_shortcuts[makuri_choice].get(course_in, {})
+                
+                    # 動き
+                    key_move = f"{key_prefix}_move_{i}"
+                    st.session_state[key_move] = shortcut_data.get("move", "")
+                
+                    # 負けたコース(1号艇)
+                    if course_in == 1:
+                        key_lost = f"{key_prefix}_lost_{i}"
+                        st.session_state[key_lost] = shortcut_data.get("lost_to", "")
+
+                    # 着順
+                    key_rank = f"{key_prefix}_rank_{i}"
+                    st.session_state[key_rank] = shortcut_data.get("rank", "")
+
+
+            st.session_state["last_makuri_choice"] = makuri_choice
+            st.rerun()  # 🔁 変更を即反映
+
+        elif sashi_choice != "---" and sashi_choice != st.session_state.get("last_sashi_choice", "---"):
+            for i, name in enumerate(racer_names, start=1):
+                key_prefix = f"{date}_{race_number}_{name}"
+                course_key = f"{key_prefix}_course_in"
+                course_in = int(st.session_state.get(course_key, 0))
+
+                if course_in:
+                    shortcut_data = sashi_shortcuts[sashi_choice].get(course_in, {})
+
+                    # 動き
+                    key_move = f"{key_prefix}_move_{i}"
+                    if "move" in shortcut_data:
+                        st.session_state[key_move] = shortcut_data["move"]
+
+                    # 負けたコース（1号艇）
+                    if course_in == 1 and "lost_to" in shortcut_data:
+                        key_lost = f"{key_prefix}_lost_{i}"
+                        st.session_state[key_lost] = shortcut_data["lost_to"]
+
+                    # 着順
+                    if "rank" in shortcut_data:
+                        key_rank = f"{key_prefix}_rank_{i}"
+                        st.session_state[key_rank] = shortcut_data["rank"]
+
+            st.session_state["last_sashi_choice"] = sashi_choice
+            st.rerun()
+
         record_data = []
 
         for i, name in enumerate(racer_names, start=1):
             key_prefix = f"{date}_{race_number}_{name}"
 
+
             st.markdown("<hr style='border:1px solid #ccc;'>", unsafe_allow_html=True)
             st.subheader(f"{i}号艇　{name}")
 
             # 進入コース（デフォルトは号艇番号）
+            # 上部で設定された進入コースを取得して反映
+            saved_course_in = st.session_state.get(f"{key_prefix}_course_in", i)
+            index = saved_course_in - 1 if 1 <= saved_course_in <= 6 else i - 1
+
             course_in = st.selectbox(
                 "進入コース",
                 [1, 2, 3, 4, 5, 6],
-                index=i - 1,
-                key=f"{key_prefix}_course_{i}"
+                index=index,
+                key=f"{key_prefix}_course_in_selectbox"
             )
+
+            # 選手欄で再変更した場合に course_key にも反映
+            course_key = f"{key_prefix}_course_in"
+            if course_in != saved_course_in:
+                st.session_state[course_key] = course_in
 
             additional_data = {}
 
@@ -181,7 +475,7 @@ try:
             elif course_in == 2:
                 move = st.selectbox("動き", ["差し", "外マイ", "ジカマ", "ツケマイ", "3捲り差され", "捲られ・叩かれ", "ブロック負け", "3ツケマイ展開"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
-                rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
+                rank = st.selectbox("着順", ["着外", "1", "2", "3"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank
 
                 # 2コースの補足項目
@@ -201,7 +495,7 @@ try:
             elif course_in == 3:
                 move = st.selectbox("動き", ["外マイ", "絞り捲り", "ツケマイ", "箱捲り", "捲り差し", "後手捲り差し", "2凹捲り差し", "差し", "2外見て差し", "2捲り展開", "展開差し・捲り差し", "2外被り", "捲られ・叩かれ", "ブロック負け"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
-                rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
+                rank = st.selectbox("着順", ["着外", "1", "2", "3"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank
 
                 flow = st.checkbox("流れ", key=f"{key_prefix}_flow_{i}")
@@ -226,7 +520,7 @@ try:
             elif course_in == 4:
                 move = st.selectbox("動き", ["差し", "捲り差し", "外マイ", "捲り", "叩いて捲り差し", "叩いて外マイ", "2捲り展開", "3捲り展開", "3絞り展開", "3ツケマイ展開", "展開捲り差し・外マイ", "3差し被り", "5捲り差され", "捲られ・叩かれ", "ブロック負け", "後手"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
-                rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
+                rank = st.selectbox("着順", ["着外", "1", "2", "3"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank
 
                 flow = st.checkbox("流れ", key=f"{key_prefix}_flow_{i}")
@@ -243,7 +537,7 @@ try:
             elif course_in == 5:
                 move = st.selectbox("動き", ["1-2捲り差し", "2-4捲り差し", "外マイ", "差し", "4外見て差し", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "4捲り展開", "4絞り展開", "3ツケマイ展開", "展開差し・捲り差し・外マイ", "4外被り", "捲られ・叩かれ", "ブロック負け", "後手"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
-                rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
+                rank = st.selectbox("着順", ["着外", "1", "2", "3"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank
 
                 flow = st.checkbox("流れ", key=f"{key_prefix}_flow_{i}")
@@ -265,7 +559,7 @@ try:
             elif course_in == 6:
                 move = st.selectbox("動き", ["差し", "捲り差し・外マイ", "捲り", "叩いて捲り差し", "叩いて外マイ", "他艇捲り展開", "4捲り展開", "5捲り展開", "5絞り展開", "展開差し・捲り差し・外マイ", "5差し被り", "ブロック負け", "後手"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
-                rank = st.selectbox("着順", ["1", "2", "3", "着外"], key=f"{key_prefix}_rank_{i}")
+                rank = st.selectbox("着順", ["着外", "1", "2", "3"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank
                 attack = st.checkbox("攻め", key=f"{key_prefix}_attack_{i}")
                 pressure = st.checkbox("圧", key=f"{key_prefix}_pressure_{i}")
