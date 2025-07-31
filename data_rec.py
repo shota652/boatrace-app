@@ -238,7 +238,7 @@ def reset_shortcut_and_course_states(date_str, race_number, venue_name, url):
 
     # --- コース進入セレクトボックスのリセット（UI） ---
     for i in range(6):
-        st.session_state.pop(f"course_pos_{i}", None)
+        st.session_state[f"course_pos_{i}"] = i + 1
 
     # --- 選手ごとのステート初期化 ---
     racer_names = get_racer_names(url, date_str, venue_name, race_number)
@@ -293,11 +293,13 @@ try:
 
         for i in range(6):
             with course_cols[i]:
+                key=f"course_pos_{i}"    
+                default = st.session_state.get(key, i + 1)             
                 course = st.selectbox(
                     f"{i+1}コース",            # ラベル：1コース〜6コース
                     [1, 2, 3, 4, 5, 6],        # 選手番号（1〜6号艇）
-                    index=i,
-                    key=f"course_pos_{i}"    # キー名は自由（意味の通るものに）
+                    index=[1, 2, 3, 4, 5, 6].index(default),
+                    key=key  # キー名は自由（意味の通るものに）
                 )
                 course_order.append(course)
 
