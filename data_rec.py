@@ -50,7 +50,7 @@ nige_shortcuts = {
 }
 
 makuri_shortcuts = {
-    "②ジカマ": {
+    "2ジカマ": {
         1: {"move": "捲られ", "lost_to": "2", "rank":"着外"},
         2: {"move": "ジカマ", "rank":"1"},
         3: {"move": "2捲り展開", "rank":"2"},
@@ -58,7 +58,7 @@ makuri_shortcuts = {
         5: {"move": "他艇捲り展開", "rank":"着外"},
         6: {"move": "他艇捲り展開", "rank":"着外"},
     },
-    "③絞り捲り": {
+    "3絞り捲り": {
         1: {"move": "捲られ", "lost_to": "3", "rank":"着外"},
         2: {"move": "捲られ・叩かれ", "rank":"着外"},
         3: {"move": "絞り捲り", "rank":"1"},
@@ -66,7 +66,7 @@ makuri_shortcuts = {
         5: {"move": "他艇捲り展開", "rank":"3"},
         6: {"move": "他艇捲り展開", "rank":"着外"},
     },
-    "③ツケマイ": {
+    "3ツケマイ": {
         1: {"move": "捲られ", "lost_to": "3", "rank":"着外"},
         2: {"move": "3ツケマイ展開", "rank":"着外"},
         3: {"move": "ツケマイ", "rank":"1"},
@@ -74,7 +74,7 @@ makuri_shortcuts = {
         5: {"move": "3ツケマイ展開", "rank":"3"},
         6: {"move": "他艇捲り展開", "rank":"着外"},
     },
-    "④捲り": {
+    "4捲り": {
         1: {"move": "捲られ", "lost_to": "4", "rank":"着外"},
         2: {"move": "捲られ・叩かれ", "rank":"着外"},
         3: {"move": "捲られ・叩かれ", "rank":"着外"},
@@ -82,7 +82,7 @@ makuri_shortcuts = {
         5: {"move": "4捲り展開", "rank":"2"},
         6: {"move": "4捲り展開", "rank":"3"},
     },
-    "⑤捲り": {
+    "5捲り": {
         1: {"move": "捲られ", "lost_to": "5", "rank":"着外"},
         2: {"move": "捲られ・叩かれ", "rank":"着外"},
         3: {"move": "捲られ・叩かれ", "rank":"着外"},
@@ -90,7 +90,7 @@ makuri_shortcuts = {
         5: {"move": "捲り", "rank":"1"},
         6: {"move": "5捲り展開", "rank":"2"},
     },
-    "⑥捲り": {
+    "6捲り": {
         1: {"move": "捲られ", "lost_to": "6", "rank":"着外"},
         2: {"move": "捲られ・叩かれ", "rank":"着外"},
         3: {"move": "捲られ・叩かれ", "rank":"着外"},
@@ -101,11 +101,11 @@ makuri_shortcuts = {
 }
 
 sashi_shortcuts = {
-    "②差し展開": {
+    "2差し展開": {
         1: {"move": "差され", "lost_to": 2, "rank": "2"},
         2: {"move": "差し", "rank": "1"},
     },
-    "③捲り差し展開": {
+    "3捲り差し展開": {
         1: {"move": "捲り差され", "lost_to": 3, "rank": "2"},
         3: {"move": "捲り差し", "rank": "1"},
     },
@@ -226,7 +226,7 @@ def get_racer_names(url, date_str, venue_name, race_number):
             st.code(str(e))
         return []
 
-# 👇 先に関数としてリセット処理を定義しておく
+# 先に関数としてリセット処理を定義しておく
 def reset_shortcut_and_course_states(date_str, race_number, venue_name, url):
     # --- ショートカットセレクトのリセット ---
     st.session_state["nige_choice"] = "---"
@@ -254,13 +254,13 @@ def reset_shortcut_and_course_states(date_str, race_number, venue_name, url):
         for key in keys_to_clear:
             st.session_state.pop(key, None)
 
-# 👇 必要なセッションステートを初期化
+# 必要なセッションステートを初期化
 if "prev_race_number" not in st.session_state:
     st.session_state.prev_race_number = race_number
 if "prev_date_str" not in st.session_state:
     st.session_state.prev_date_str = date_str
 
-# 👇 レース or 日付が変わったらリセット
+# レース or 日付が変わったらリセット
 if st.session_state.prev_race_number != race_number or st.session_state.prev_date_str != date_str:
     reset_shortcut_and_course_states(date_str, race_number, venue_name, url)
     st.session_state.prev_race_number = race_number
@@ -495,7 +495,7 @@ try:
                 additional_data["3捲り差し1着"] = three_makurizashi
 
             elif course_in == 3:
-                move = st.selectbox("動き", ["外マイ", "絞り捲り", "ツケマイ", "箱捲り", "捲り差し", "後手捲り差し", "2凹捲り差し", "差し", "2外見て差し", "2捲り展開", "展開差し・捲り差し", "2外被り", "捲られ・叩かれ", "ブロック負け"], key=f"{key_prefix}_move_{i}")
+                move = st.selectbox("動き", ["外マイ", "絞り捲り", "ツケマイ", "箱捲り", "捲り差し", "後手捲り差し", "差し", "2外見て差し", "2捲り展開", "展開差し・捲り差し", "2外被り", "捲られ・叩かれ", "ブロック負け"], key=f"{key_prefix}_move_{i}")
                 additional_data["動き"] = move
                 rank = st.selectbox("着順", ["着外", "1", "2", "3"], key=f"{key_prefix}_rank_{i}")
                 additional_data["着順"] = rank

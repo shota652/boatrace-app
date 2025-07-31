@@ -55,7 +55,6 @@ color_map = {
 
     "捲り差し": "khaki",
     "後手捲り差し": "goldenrod",
-    "2凹捲り差し": "gold",
     "叩いて捲り差し": "khaki",
     "1-2捲り差し": "gold",
     "2-4捲り差し": "goldenrod",
