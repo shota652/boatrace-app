@@ -395,7 +395,7 @@ try:
 
 
             st.session_state["last_makuri_choice"] = makuri_choice
-            st.rerun()  # 🔁 変更を即反映
+            st.rerun()  # 変更を即反映
 
         elif sashi_choice != "---" and sashi_choice != st.session_state.get("last_sashi_choice", "---"):
             for i, name in enumerate(racer_names, start=1):
