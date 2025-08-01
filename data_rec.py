@@ -27,6 +27,11 @@ nige_shortcuts = {
         2: {"rank": "2"},
         4: {"rank": "3"},
     },
+    "1-2-5": {
+        1: {"rank": "1", "second_place": 2},
+        2: {"rank": "2"},
+        5: {"rank": "3"},
+    },
     "1-3-2": {
         1: {"rank": "1", "second_place": 3},
         3: {"rank": "2"},
@@ -36,6 +41,11 @@ nige_shortcuts = {
         1: {"rank": "1", "second_place": 3},
         3: {"rank": "2"},
         4: {"rank": "3"},
+    },
+    "1-3-5": {
+        1: {"rank": "1", "second_place": 3},
+        3: {"rank": "2"},
+        5: {"rank": "3"},
     },
     "1-4-2": {
         1: {"rank": "1", "second_place": 4},
@@ -47,6 +57,11 @@ nige_shortcuts = {
         4: {"rank": "2"},
         3: {"rank": "3"},
     },
+    "1-4-5": {
+        1: {"rank": "1", "second_place": 4},
+        4: {"rank": "2"},
+        5: {"rank": "3"},
+    },
 }
 
 makuri_shortcuts = {
@@ -54,7 +69,7 @@ makuri_shortcuts = {
         1: {"move": "捲られ", "lost_to": "2", "rank":"着外"},
         2: {"move": "ジカマ", "rank":"1"},
         3: {"move": "2捲り展開", "rank":"2"},
-        4: {"move": "2捲り展開", "rank":"3"},
+        4: {"move": "2捲り展開", "rank":"着外"},
         5: {"move": "他艇捲り展開", "rank":"着外"},
         6: {"move": "他艇捲り展開", "rank":"着外"},
     },
@@ -63,7 +78,7 @@ makuri_shortcuts = {
         2: {"move": "捲られ・叩かれ", "rank":"着外"},
         3: {"move": "絞り捲り", "rank":"1"},
         4: {"move": "3捲り展開", "rank":"2"},
-        5: {"move": "他艇捲り展開", "rank":"3"},
+        5: {"move": "他艇捲り展開", "rank":"着外"},
         6: {"move": "他艇捲り展開", "rank":"着外"},
     },
     "3ツケマイ": {
@@ -71,7 +86,7 @@ makuri_shortcuts = {
         2: {"move": "3ツケマイ展開", "rank":"着外"},
         3: {"move": "ツケマイ", "rank":"1"},
         4: {"move": "3ツケマイ展開", "rank":"2"},
-        5: {"move": "3ツケマイ展開", "rank":"3"},
+        5: {"move": "3ツケマイ展開", "rank":"着外"},
         6: {"move": "他艇捲り展開", "rank":"着外"},
     },
     "4捲り": {
@@ -80,7 +95,7 @@ makuri_shortcuts = {
         3: {"move": "捲られ・叩かれ", "rank":"着外"},
         4: {"move": "捲り", "rank":"1"},
         5: {"move": "4捲り展開", "rank":"2"},
-        6: {"move": "4捲り展開", "rank":"3"},
+        6: {"move": "4捲り展開", "rank":"着外"},
     },
     "5捲り": {
         1: {"move": "捲られ", "lost_to": "5", "rank":"着外"},
@@ -195,12 +210,12 @@ url = f"https://www.boatrace.jp/owpc/pc/race/racelist?rno={race_number}&jcd={ven
 
 @st.cache_data(ttl=3600)
 def get_racer_names(url, date_str, venue_name, race_number):
-    # ① まずローカルに出走表があるか確認
+    #  まずローカルに出走表があるか確認
     local_data = load_local_racecard(date_str, venue_name, race_number)
     if local_data:
         return local_data
 
-    # ② なければオンラインで取得
+    #  なければオンラインで取得
     try:
         res = requests.get(url)
         res.raise_for_status()
