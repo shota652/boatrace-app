@@ -304,15 +304,85 @@ def get_racer_names(url, date_str, venue_name, race_number):
             st.code(str(e))
         return []
 
+# 先に関数としてリセット処理を定義しておく
+def reset_shortcut_and_course_states(date_str, race_number, venue_name, url):
+
+    # --- コース進入セレクトボックスのリセット（UI） ---
+    for i in range(6):
+        st.session_state[f"course_pos_{i}"] = i + 1
+
+    # --- 選手ごとのステート初期化 ---
+    racer_names = get_racer_names(url, date_str, venue_name, race_number)
+    for i, name in enumerate(racer_names, start=1):
+        key_prefix = f"{date_str}_{race_number}_{name}"
+        keys_to_clear = [
+            f"{key_prefix}_course_in",
+            f"{key_prefix}_move_{i}",
+            f"{key_prefix}_rank_{i}",
+            f"{key_prefix}_lost_{i}",
+            f"{key_prefix}_second_{i}",
+        ]
+        for key in keys_to_clear:
+            st.session_state.pop(key, None)
+
+# 必要なセッションステートを初期化
+if "prev_race_number" not in st.session_state:
+    st.session_state.prev_race_number = race_number
+if "prev_date_str" not in st.session_state:
+    st.session_state.prev_date_str = date_str
+
+# レース or 日付が変わったらリセット
+if st.session_state.prev_race_number != race_number or st.session_state.prev_date_str != date_str:
+    reset_shortcut_and_course_states(date_str, race_number, venue_name, url)
+    st.session_state.prev_race_number = race_number
+    st.session_state.prev_date_str = date_str
+
+
+
+
 racer_names = get_racer_names(url, date_str, venue_name, race_number)
 
 try:
     if racer_names:
         st.markdown(f"### {venue_name} {race_number}R 出走表")
+
+        st.markdown("### 進入コース")
+
+        course_order = []  # 選手番号（1〜6）がどのコースに入ったか（例: [2, 3, 1, 4, 5, 6]）
+        course_cols = st.columns(6)
+
+        for i in range(6):
+            with course_cols[i]:
+                key=f"course_pos_{i}"    
+                default = st.session_state.get(key, i + 1)             
+                course = st.selectbox(
+                    f"{i+1}コース",            # ラベル：1コース〜6コース
+                    [1, 2, 3, 4, 5, 6],        # 選手番号（1〜6号艇）
+                    index=[1, 2, 3, 4, 5, 6].index(default),
+                    key=key  # キー名は自由（意味の通るものに）
+                )
+                course_order.append(course)
+
+        # 毎回セッションに保持
+        st.session_state["course_order"] = course_order
+
+        # --- 選手ごとの進入コース（course_in）をセッションステートに反映 ---
+        for i, name in enumerate(racer_names, start=1):  # i: 1〜6号艇
+            key_prefix = f"{date}_{race_number}_{name}"
+            course_key = f"{key_prefix}_course_in"
+
+            if i in course_order:
+                course_in = course_order.index(i) + 1  # 進入コースは1〜6（リストindexなので+1）
+                st.session_state[course_key] = course_in
+            else:
+                st.session_state[course_key] = 0  # 不正な場合は0（空白）で初期化
+
         
         record_data = []
 
         for i, name in enumerate(racer_names, start=1):
+            key_prefix = f"{date}_{race_number}_{name}"
+
 
             if i > 1:
                 # 2人目以降の前に罫線を入れる
@@ -325,20 +395,36 @@ try:
             unsafe_allow_html=True)
 
             with cols[1]:
-                selected_course = st.selectbox(
-                    "コース",
+                # --- 進入コースのセッション保存付き選択 ---
+                saved_course_in = st.session_state.get(f"{key_prefix}_course_in", i)
+                index = saved_course_in - 1 if 1 <= saved_course_in <= 6 else i - 1
+
+                course_in = st.selectbox(
+                    "進入コース",
                     options=[1, 2, 3, 4, 5, 6],
-                    index=i - 1,
-                    key=f"course_{i}"
+                    index=index,
+                    key=f"{key_prefix}_course_in_selectbox"
                 )
+
+                course_key = f"{key_prefix}_course_in"
+                if course_in != saved_course_in:
+                    st.session_state[course_key] = course_in
+
+
+                additional_data = {}
+
+                # ---------------------------------------
            
             # 必要に応じて、ここに選手名と選択されたコースを保存する処理などを追加できます
             # 例: record_data.append({"選手名": name, "進入コース": selected_course}
 
-            race_data = get_race_data_from_csv(name, selected_course)
+            race_data = get_race_data_from_csv(name, course_in)
 
             # 動きの表＋円グラフを表示 ←★ここで表示実行
             show_movement_summary(race_data, name)
+
+        # 最後に course_order を保存
+        st.session_state["course_order"] = course_order
 
 except Exception as e:
     st.error(f"データの取得中にエラーが発生しました: {e}")
