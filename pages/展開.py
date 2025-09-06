@@ -45,8 +45,7 @@ def main():
                 st.session_state[edit_key] = False
 
             # expanderでカード風表示
-            with st.expander(f"{idx}. {pattern['pattern']}", expanded=False):
-                st.markdown(f"### {pattern['pattern']}")
+            with st.expander(f"{idx}. {pattern['pattern']}", expanded=True):
                 st.markdown(f"📝 <span style='color:blue'>要因:</span> {pattern['factor']}", unsafe_allow_html=True)
                 st.markdown(f"🎯 <span style='color:green'>出目:</span> {pattern['result']}", unsafe_allow_html=True)
 
@@ -78,7 +77,7 @@ def main():
 
     st.markdown("---")
     st.subheader("新しいパターンを追加")
-    with st.form("add_pattern"):
+    with st.form("add_pattern", clear_on_submit=True):
         pattern = st.text_input("パターン（例: ジカマ成功）", key="pattern")
         factor = st.text_input("要因（例: 1号艇スタート遅れ）", key="factor")
         result = st.text_input("出目（例: 2-1,2-3,2-4）", key="result")
@@ -87,20 +86,19 @@ def main():
         if submitted:
             if pattern and result:
                 new_entry = {
-                    "pattern": pattern,
-                    "factor": factor,
-                    "result": result
+                    "pattern": pattern.strip(),
+                    "factor": factor.strip(),
+                    "result": result.strip()
                 }
-                scenarios[selected_type].append(new_entry)
-                save_scenarios(scenarios)
 
-                # 入力欄をリセット
-                st.session_state.pattern = ""
-                st.session_state.factor = ""
-                st.session_state.result = ""
-
-                st.success("追加しました！")
-                st.rerun()
+                # 重複チェック
+                if new_entry not in scenarios[selected_type]:
+                    st.warning("同じパターンがすでに存在します。")
+                else:
+                    scenarios[selected_type].append(new_entry)
+                    save_scenarios(scenarios)
+                    st.success("追加しました！")
+                    st.rerun()
             else:
                 st.error("パターンと出目は必須です。")
 
