@@ -92,7 +92,7 @@ def main():
                 }
 
                 # 重複チェック
-                if new_entry not in scenarios[selected_type]:
+                if new_entry in scenarios[selected_type]:
                     st.warning("同じパターンがすでに存在します。")
                 else:
                     scenarios[selected_type].append(new_entry)
