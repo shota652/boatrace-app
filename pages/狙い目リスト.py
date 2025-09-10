@@ -1,10 +1,30 @@
 import streamlit as st
 import json
+import re
 import os
 from datetime import datetime, timedelta
 
 SAVE_DIR = "local_racecards"
 LIST_FILE = "manual_list.json"
+
+# ------------------
+# 名前結合関数（6文字基準）
+# ------------------
+def join_name(last, first):
+    total_len = len(last) + len(first)
+    spaces = max(0, 6 - total_len)
+    return last + "　" * spaces + first  # 全角スペース
+
+
+# ------------------
+# 名前分割関数（編集用）
+# ------------------
+def split_name(full_name):
+    # 🔹 全角スペースが1～複数あっても分割できるようにする
+    parts = re.split(r"　+", full_name)
+    if len(parts) == 2:
+        return parts[0], parts[1]
+    return full_name, ""  # 念のため
 
 # ------------------
 # 狙い目リストのロード
@@ -81,23 +101,28 @@ if search_last or search_first:
     if results:
         st.subheader("検索結果")
         for i, m in enumerate(results):
+
+            # 🔹 編集フラグがない場合は False で初期化
+            if f"edit_{i}" not in st.session_state:
+                st.session_state[f"edit_{i}"] = False
+
             col1, col2, col3, col4, col5, col6 = st.columns([2,1,1,2,1,1])
             col1.write(m["name"])
             col2.write(f"{m['lane']}コース")
             col3.write(m["mark"])
             col4.write(m["note"])
-            if col5.button("編集", key=f"edit_{i}"):
+            if col5.button("編集", key=f"btn_edit_{i}"):  # key をボタン専用にする
                 st.session_state[f"edit_{i}"] = True
             if col6.button("削除", key=f"del_{i}"):
-                manual_list.pop(i)
+                manual_list.remove(m)
                 with open(LIST_FILE, "w", encoding="utf-8") as f:
                     json.dump(manual_list, f, ensure_ascii=False, indent=2)
                 st.success("削除しました")
                 st.rerun()
 
             if st.session_state.get(f"edit_{i}", False):
+                last_name, first_name = split_name(m["name"])
                 with st.form(f"form_edit_{i}"):
-                    last_name, first_name = m["name"].split("　　")
                     new_last = st.text_input("苗字", value=last_name)
                     new_first = st.text_input("名前", value=first_name)
                     new_lane = st.selectbox("コース", [1,2,3,4,5,6], index=m["lane"]-1)
@@ -105,7 +130,7 @@ if search_last or search_first:
                     new_mark = st.radio("評価", ["◯","△"], index=0 if m["mark"]=="◯" else 1)
                     submitted = st.form_submit_button("更新")
                     if submitted:
-                        m["name"] = f"{new_last}　　{new_first}"
+                        m["name"] = join_name(new_last, new_first)
                         m["lane"] = new_lane
                         m["note"] = new_note
                         m["mark"] = new_mark
@@ -130,9 +155,9 @@ with st.form("add_form", clear_on_submit=True):
     submitted = st.form_submit_button("追加")
 
 if submitted:
-    full_name = f"{last_name}　　{first_name}"  # 全角スペース2つで結合
+    full_name = join_name(last_name, first_name)
     new_entry = {"name": full_name, "lane": lane, "note": note, "mark": mark}
     manual_list.append(new_entry)
     with open(LIST_FILE, "w", encoding="utf-8") as f:
         json.dump(manual_list, f, ensure_ascii=False, indent=2)
-    st.success("追加しました！")
+    st.success(f"追加しました！ → {full_name}")
