@@ -1,131 +1,876 @@
 {
   "イン逃げ": [
     {
-      "pattern": "③外マイ△",
-      "factor": "外マイ流れ、2残し　★③の逃がし時複勝率",
-      "result": "1-2"
+      "pattern": "②外マイ",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-3-2",
+          "count": 2
+        },
+        {
+          "kimari": "1-4-2",
+          "count": 1
+        },
+        {
+          "kimari": "1-4-3",
+          "count": 1
+        },
+        {
+          "kimari": "1-4-5",
+          "count": 1
+        },
+        {
+          "kimari": "1-2-3",
+          "count": 1
+        },
+        {
+          "kimari": "1-5-3",
+          "count": 1
+        },
+        {
+          "kimari": "1-2-6",
+          "count": 1
+        },
+        {
+          "kimari": "1-5-2",
+          "count": 1
+        }
+      ]
     },
     {
-      "pattern": "③捲り差し失敗→②③流れ",
-      "factor": "③捲り差し→②抵抗",
-      "result": "1-4,5,6"
+      "pattern": "②差し（キャビ）",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-3-5",
+          "count": 3
+        }
+      ]
     },
     {
-      "pattern": "③捲り差し失敗→③流れ",
-      "factor": "③捲り差し→流れて⑤外マイとぶつかる",
-      "result": "1-2-4,6"
+      "pattern": "②差し（流れ）",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-3-4",
+          "count": 6
+        },
+        {
+          "kimari": "1-3-5",
+          "count": 2
+        },
+        {
+          "kimari": "1-6-3",
+          "count": 2
+        },
+        {
+          "kimari": "1-4-2",
+          "count": 2
+        },
+        {
+          "kimari": "1-4-3",
+          "count": 2
+        },
+        {
+          "kimari": "1-3-6",
+          "count": 2
+        },
+        {
+          "kimari": "1-3-2",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "pattern": "③外マイ",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-3-2",
+          "count": 5
+        },
+        {
+          "kimari": "1-2-3",
+          "count": 3
+        },
+        {
+          "kimari": "1-3-5",
+          "count": 2
+        },
+        {
+          "kimari": "1-4-2",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "pattern": "③外マイ（流れ , 2残し）",
+      "factor": "①3張り",
+      "results": [
+        {
+          "kimari": "1-2-4",
+          "count": 5
+        },
+        {
+          "kimari": "1-2-3",
+          "count": 5
+        },
+        {
+          "kimari": "1-4-2",
+          "count": 4
+        },
+        {
+          "kimari": "1-2-5",
+          "count": 3
+        },
+        {
+          "kimari": "1-5-2",
+          "count": 2
+        },
+        {
+          "kimari": "1-3-5",
+          "count": 2
+        },
+        {
+          "kimari": "1-5-6",
+          "count": 1
+        },
+        {
+          "kimari": "1-2-6",
+          "count": 1
+        },
+        {
+          "kimari": "1-5-4",
+          "count": 1
+        },
+        {
+          "kimari": "1-6-2",
+          "count": 1
+        },
+        {
+          "kimari": "1-4-5",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "③差し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-2-3",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "③捲り差し（2残し）",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-2-3",
+          "count": 4
+        },
+        {
+          "kimari": "1-3-2",
+          "count": 3
+        },
+        {
+          "kimari": "1-4-6",
+          "count": 1
+        },
+        {
+          "kimari": "1-4-2",
+          "count": 1
+        },
+        {
+          "kimari": "1-2-4",
+          "count": 1
+        },
+        {
+          "kimari": "1-3-5",
+          "count": 1
+        },
+        {
+          "kimari": "1-2-5",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "③捲り差し（2沈ませ）",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-3-6",
+          "count": 2
+        },
+        {
+          "kimari": "1-4-3",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "③捲り差し（流れ）",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-2-4",
+          "count": 3
+        },
+        {
+          "kimari": "1-4-5",
+          "count": 1
+        },
+        {
+          "kimari": "1-4-2",
+          "count": 1
+        },
+        {
+          "kimari": "1-4-3",
+          "count": 1
+        },
+        {
+          "kimari": "1-5-6",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "③絞り→外マイ",
+      "factor": "②凹み",
+      "results": [
+        {
+          "kimari": "1-6-3",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "③絞り→捲り差し",
+      "factor": "②凹み",
+      "results": [
+        {
+          "kimari": "1-3-6",
+          "count": 1
+        },
+        {
+          "kimari": "1-6-3",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "④同体外マイ",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-5-2",
+          "count": 1
+        },
+        {
+          "kimari": "1-4-2",
+          "count": 1
+        },
+        {
+          "kimari": "1-6-4",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "④同体捲り差し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-3-4",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "④絞り→②抵抗外マイ",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-2-5",
+          "count": 1
+        },
+        {
+          "kimari": "1-5-2",
+          "count": 1
+        },
+        {
+          "kimari": "1-5-3",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "④絞り→叩いて外マイ",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-4-5",
+          "count": 3
+        },
+        {
+          "kimari": "1-2-6",
+          "count": 2
+        },
+        {
+          "kimari": "1-2-5",
+          "count": 2
+        },
+        {
+          "kimari": "1-6-2",
+          "count": 1
+        },
+        {
+          "kimari": "1-5-4",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "④絞り→叩いて捲り差し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-4-3",
+          "count": 1
+        },
+        {
+          "kimari": "1-2-6",
+          "count": 1
+        },
+        {
+          "kimari": "1-5-6",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "⑤2-4捲り差し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-2-5",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "⑤絞り→③抵抗先外マイ",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-3-6",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "⑤絞り→叩いて外マイ",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "1-5-3",
+          "count": 1
+        },
+        {
+          "kimari": "1-5-2",
+          "count": 1
+        }
+      ]
     }
   ],
   "2捲り": [
     {
-      "pattern": "ジカマ成功",
-      "factor": "①ST遅れ",
-      "result": "2=345,3-4,5-3"
+      "pattern": "②ジカマ→差され",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "5-2-1",
+          "count": 1
+        },
+        {
+          "kimari": "3-2-6",
+          "count": 1
+        },
+        {
+          "kimari": "3-5-2",
+          "count": 1
+        },
+        {
+          "kimari": "3-4-2",
+          "count": 1
+        }
+      ]
     },
     {
-      "pattern": "④攻めを抑えて②先捲り",
-      "factor": "①捲られ②先捲り③捲られ④2捲り被り⑤差し⑥差し",
-      "result": "2-5,6"
+      "pattern": "②ジカマ成功",
+      "factor": "①出遅れ",
+      "results": [
+        {
+          "kimari": "2-3-1",
+          "count": 2
+        },
+        {
+          "kimari": "2-3-5",
+          "count": 2
+        },
+        {
+          "kimari": "2-4-3",
+          "count": 1
+        }
+      ]
     },
     {
       "pattern": "②ツケマイ",
-      "factor": "②ツケマイ③2外被り④差し⑤外or捲り差し⑥差し　→　差しが残る展開",
-      "result": "2=4"
+      "factor": "",
+      "results": [
+        {
+          "kimari": "2-4-1",
+          "count": 1
+        }
+      ]
     }
   ],
   "2差し": [
     {
-      "pattern": "①流れ②差し③外マイ",
-      "factor": "①流れ　→　③外マイも流れる",
-      "result": "2=4,5"
+      "pattern": "②圧かけてから差し→①流れ",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "2-3-4",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "②差し③外マイ",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "2-1-4",
+          "count": 4
+        },
+        {
+          "kimari": "2-1-6",
+          "count": 3
+        },
+        {
+          "kimari": "2-1-3",
+          "count": 2
+        },
+        {
+          "kimari": "2-4-1",
+          "count": 1
+        },
+        {
+          "kimari": "2-1-5",
+          "count": 1
+        },
+        {
+          "kimari": "2-3-5",
+          "count": 1
+        }
+      ]
     },
     {
       "pattern": "②差し③捲り差し",
-      "factor": "①流れ",
-      "result": "2=3"
+      "factor": "①ターン流れ",
+      "results": [
+        {
+          "kimari": "2-1-4",
+          "count": 2
+        },
+        {
+          "kimari": "2-1-3",
+          "count": 2
+        },
+        {
+          "kimari": "2-3-1",
+          "count": 1
+        }
+      ]
     }
   ],
   "3捲り": [
     {
+      "pattern": "③2叩いてツケマイ",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "3-4-1",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "③ツケマイ→⑤捲り差し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "5-3-6",
+          "count": 1
+        },
+        {
+          "kimari": "2-5-3",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "③同体ツケマイ",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "3-2-6",
+          "count": 1
+        },
+        {
+          "kimari": "3-1-2",
+          "count": 1
+        },
+        {
+          "kimari": "3-1-5",
+          "count": 1
+        },
+        {
+          "kimari": "3-4-2",
+          "count": 1
+        },
+        {
+          "kimari": "2-3-4",
+          "count": 1
+        },
+        {
+          "kimari": "3-2-5",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "③箱捲り",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "3-1-4",
+          "count": 1
+        }
+      ]
+    },
+    {
       "pattern": "③絞り捲り",
-      "factor": "①②ST遅れ",
-      "result": "3=4,5　4-5"
+      "factor": "",
+      "results": [
+        {
+          "kimari": "3-5-1",
+          "count": 2
+        },
+        {
+          "kimari": "3-2-4",
+          "count": 1
+        },
+        {
+          "kimari": "3-1-4",
+          "count": 1
+        }
+      ]
     },
     {
-      "pattern": "③ツケマイ",
-      "factor": "①落としすぎ",
-      "result": "3-9"
-    },
-    {
-      "pattern": "③捲り→①ブロック",
-      "factor": "①③やり合い",
-      "result": "4-5"
+      "pattern": "③絞り捲り→差され",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "5-4-3",
+          "count": 1
+        }
+      ]
     }
   ],
-  "3捲り差し": [],
+  "3捲り差し": [
+    {
+      "pattern": "③叩いて捲り差し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "4-3-1",
+          "count": 1
+        },
+        {
+          "kimari": "3-1-5",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "③捲り差し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "3-1-2",
+          "count": 2
+        },
+        {
+          "kimari": "3-1-4",
+          "count": 1
+        }
+      ]
+    }
+  ],
   "4捲り": [
     {
-      "pattern": "④絞り捲り　成功",
-      "factor": "①②③凹",
-      "result": "4-9 , 5-4"
+      "pattern": "④絞り→叩いてツケマイ",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "4-3-6",
+          "count": 1
+        },
+        {
+          "kimari": "4-2-1",
+          "count": 1
+        }
+      ]
     },
     {
-      "pattern": "④絞り捲り　①抵抗",
-      "factor": "①抵抗で④膨らむ",
-      "result": "4=2"
+      "pattern": "④絞り捲り→①かわり全速",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "4-1-6",
+          "count": 1
+        }
+      ]
     },
     {
-      "pattern": "④絞り捲り　③抵抗しながらひっかけて残す",
-      "factor": "④に抵抗しながら①②を叩いて差し残す",
-      "result": "4-3"
+      "pattern": "④絞り捲り→②1を叩いて内残し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "4-2-5",
+          "count": 1
+        }
+      ]
     },
     {
-      "pattern": "④ツケマイ",
-      "factor": "②が残って⑤と被る",
-      "result": "4-2,6"
+      "pattern": "④絞り捲り→②かわり全速",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "4-2-5",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "④絞り捲り→流れて差され",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "5-6-3",
+          "count": 1
+        },
+        {
+          "kimari": "5-4-3",
+          "count": 1
+        },
+        {
+          "kimari": "6-4-3",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "④絞り捲り失敗→ブロック負け",
+      "factor": "①捲りブロック",
+      "results": [
+        {
+          "kimari": "5-1-2",
+          "count": 2
+        },
+        {
+          "kimari": "5-2-6",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "④絞り捲り（かわり全速なし）",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "4-3-5",
+          "count": 1
+        },
+        {
+          "kimari": "4-5-1",
+          "count": 1
+        },
+        {
+          "kimari": "4-6-5",
+          "count": 1
+        }
+      ]
     }
   ],
   "4捲り差し": [
     {
-      "pattern": "叩いて捲り差し",
+      "pattern": "④絞り→叩いて捲り差し",
       "factor": "②③凹み",
-      "result": "1=4 , 56-1 , 6-4 , 4-2"
-    },
-    {
-      "pattern": "③絞り",
-      "factor": "③絞って捲り差し→落としたところを④捲り差し",
-      "result": "4-1 , 4=5"
+      "results": [
+        {
+          "kimari": "4-1-6",
+          "count": 2
+        },
+        {
+          "kimari": "4-5-1",
+          "count": 1
+        },
+        {
+          "kimari": "5-1-4",
+          "count": 1
+        },
+        {
+          "kimari": "4-1-2",
+          "count": 2
+        }
+      ]
     }
   ],
-  "4差し": [],
+  "4差し": [
+    {
+      "pattern": "①2外をブロック",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "4-1-6",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "①3外に張り",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "4-1-5",
+          "count": 1
+        },
+        {
+          "kimari": "4-2-1",
+          "count": 1
+        }
+      ]
+    }
+  ],
   "5捲り": [
     {
-      "pattern": "⑤箱捲り",
-      "factor": "④ST遅れ",
-      "result": "5-1"
-    },
-    {
       "pattern": "⑤絞り捲り",
-      "factor": "⑤ST抜出",
-      "result": "5-6,6-5"
+      "factor": "",
+      "results": [
+        {
+          "kimari": "5-1-4",
+          "count": 1
+        },
+        {
+          "kimari": "5-1-2",
+          "count": 2
+        }
+      ]
     },
     {
-      "pattern": "⑤捲り①ブロック",
-      "factor": "①と⑤がやり合う",
-      "result": "2-6"
+      "pattern": "⑤絞り捲り→②1を叩いて内残し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "5-2-6",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "⑤絞り捲り→③内を叩いて内残し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "5-3-4",
+          "count": 1
+        }
+      ]
     }
   ],
   "5捲り差し": [
     {
-      "pattern": "⑤2-4捲り差し③捲り差し",
-      "factor": "①に差さる",
-      "result": "5-1=3"
+      "pattern": "⑤1-2捲り差し",
+      "factor": "①3張り",
+      "results": [
+        {
+          "kimari": "5-1-3",
+          "count": 1
+        },
+        {
+          "kimari": "5-1-2",
+          "count": 1
+        },
+        {
+          "kimari": "5-2-3",
+          "count": 1
+        }
+      ]
     },
     {
-      "pattern": "④絞り展開",
-      "factor": "④が落としたところをスピードを持って捲り差し",
-      "result": "5-1"
+      "pattern": "⑤2-4捲り差し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "5-2-1",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pattern": "⑤絞り→叩いて捲り差し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "5-1-6",
+          "count": 1
+        }
+      ]
     }
   ],
-  "6捲り": []
+  "6捲り": [
+    {
+      "pattern": "⑥絞り捲り",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "6-1-4",
+          "count": 1
+        },
+        {
+          "kimari": "6-4-3",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "6捲り差し": [
+    {
+      "pattern": "⑥捲り差し",
+      "factor": "",
+      "results": [
+        {
+          "kimari": "6-1-3",
+          "count": 1
+        }
+      ]
+    }
+  ]
 }
